@@ -92,86 +92,8 @@ def log_diff(old_dir_path,new_dir_path,diff_dir,change_dir,log_path,change_time)
                     p.read()
                 p.close()
                 add_num += 1
-        #cnt += 1
-    #log.write('number:'+str(cnt)+'\n')
     log.write('fff change:'+str(change_num)+' delete:'+str(delete_num)+' add:'+str(add_num)+'\n')
     log.close()
-    # os.chdir(diff_dir)
-    # with os.popen('rm old_dir.txt') as p:
-    #     p.read()
-    # p.close()
-    # with os.popen('mv new_dir.txt old_dir.txt') as p:
-    #     p.read()
-    # p.close()
-
-# def log_diff(old_dir_path,new_dir_path,diff_dir,change_dir,log_path,change_time):
-#     file_path = diff_dir+'/diff.txt'
-#     # log_path = log_dir+'/log.txt'
-#     f = open(file_path, 'r')
-#     lines = f.readlines()
-#     f.close()
-#     #cnt = 0
-#     # change_time = time.time()
-#     log = open(log_path,'a')
-#     os.chdir(change_dir)
-#     with os.popen('mkdir '+str(change_time)) as p:
-#         p.read()
-#     p.close()
-#     add_list = []
-#     delete_list = []
-#     change_num = 0
-#     add_num = 0
-#     delete_num = 0
-#     for line in lines:
-#         if line.startswith('<'): # 旧的删除
-#             temp_path = line.rstrip('\n').split(' ')[3].lstrip('./') 
-#             delete_list.append(temp_path)
-#         elif line.startswith('>'): # 新的添加
-#             temp_path = line.rstrip('\n').split(' ')[3].lstrip('./') 
-#             add_list.append(temp_path)
-#             with os.popen('cp '+new_dir_path+'/'+temp_path+' '+change_dir+'/'+str(change_time)) as p:
-#                 p.read()
-#             p.close
-#         elif line.startswith('-'):
-#             continue
-#         else:
-#             if len(add_list)!=0 or len(delete_list)!=0:
-#                 for i in delete_list:
-#                     if i in add_list:
-#                         log.write(str(change_time)+' '+'change'+' '+i+'\n')
-#                         change_num += 1
-#                     else:
-#                         log.write(str(change_time)+' '+'delete'+' '+i+'\n')
-#                         delete_num += 1
-#                 for i in add_list:
-#                     if i not in delete_list:
-#                         log.write(str(change_time)+' '+'add'+' '+i+'\n')
-#                         add_num += 1
-#             add_list = []
-#             delete_list = []
-#         #cnt += 1
-#     #log.write('number:'+str(cnt)+'\n')
-#     if len(add_list)!=0 or len(delete_list)!=0:
-#         for i in delete_list:
-#             if i in add_list:
-#                 log.write(str(change_time)+' '+'change'+' '+i+'\n')
-#                 change_num += 1
-#             else:
-#                 log.write(str(change_time)+' '+'delete'+' '+i+'\n')
-#                 delete_num += 1
-#         for i in add_list:
-#             if i not in delete_list:
-#                 log.write(str(change_time)+' '+'add'+' '+i+'\n')
-#                 add_num += 1
-#     log.write('ff change:'+str(change_num)+' delete:'+str(delete_num)+' add:'+str(add_num))
-#     log.close()
-#     os.chdir(diff_dir)
-#     with os.popen('rm old_dir.txt') as p:
-#         p.read()
-#     p.close()
-#     with os.popen('mv new_dir.txt old_dir.txt') as p:
-#         p.read()
-#     p.close()
 
 
 # return old_line 表示读到了第几行
@@ -180,19 +102,12 @@ def read_syslog(old_line,old_time_list): # return old_line
     time_list = [] # 记录发现本次发现更改的时间，不是执行任务
     mission_list = [] # 记录发现更改的时间，上次出现过（执行过的）就不再被添加；用来执行
     cnt = 0
-    # with r=os.popen('wc -l '+syslog_path) as p:
-    #     p.read()
-    # p.close()
     print('old_line is '+str(old_line))
-    r=os.popen('wc -l '+syslog_path)
+    r = os.popen('wc -l '+syslog_path)
     number = int(r.read().split(' ')[0])
-    # print(number)
     r.close()
     print(number)
     if number < old_line: #到每天6.25左右会将syslog变为syslog.1
-        # with r = os.popen('tail -n +'+str(old_line+1)+' '+syslog1_path) as p:
-        #     p.read()
-        # p.close()
         r = os.popen('tail -n +'+str(old_line+1)+' '+syslog1_path)
         lines = r.readlines()
         r.close()
@@ -244,17 +159,6 @@ def read_syslog(old_line,old_time_list): # return old_line
                         time_list.append(c_time)
         print('anaylse '+str(cnt)+' logs!')
         return old_line+cnt,time_list,mission_list
-
-
-# file_dir = '/home/rpki/data/past'
-# dir1 = '211124'
-# dir2 = '211125'
-# old_dir_path = '/home/rpki/data/past/211124'  
-# new_dir_path = '/home/rpki/data/past/211125' 
-# diff_dir = '/home/rpki/diff'
-# log_dir = '/home/rpki/test'
-# change_dir = '/home/rpki/test/change'
-
 # 标志符
 init_flag = 0 # 0表示未初始化；用来记录每天更换目录的初始化
 is_changed = 0 # 用来记录今日的备份是否进行过一次更新；0表示否；此处决定first_make_md5还是make_md5
@@ -295,12 +199,6 @@ mission_list = [] # 快照任务
 
 # 定期同步整天
 old_day =  datetime.datetime.now().strftime('%Y%m%d')
-
-# begin = time.time()
-# # (old_dir_path,new_dir_path,diff_dir,change_dir,log_path,change_time)
-# log_diff('/home/rpki/data/past/211124','/home/rpki/data/past/211125','/home/rpki/diff','/home/rpki/test/change','/home/rpki/test/log.txt','17:47:22')
-# end = time.time()
-# print(end-begin)
 ##################
 while(True):
     #初始化,仅刚开始运行一次
@@ -363,13 +261,6 @@ while(True):
             log_diff(old_dir_path,new_dir_path,diff_dir,day_change_path,day_log_path,mission)
             end1 = time.time()
             print('log_diff finish:',end1-begin1)
-            # if is_changed == 0: 
-            #     first_make_md5(new_dir_path,old_dir_path,diff_dir) # 改命令
-            #     is_changed = 1
-            # else:
-            #     make_md5(new_dir_path)
-            # diff_md5(diff_dir)
-            # log_diff(old_dir_path,new_dir_path,diff_dir,day_change_path,day_log_path,mission)
             print('finish a mission!!!')
             mission_list = []
         end = time.time()
@@ -377,37 +268,3 @@ while(True):
     else:
         print('no missions!!!')
         time.sleep(60)
-
-
-
-    
-    
-
-    
-
-    
-
-##################
-
-
-# flag = 0
-# while(true):
-#     start = time.time()
-#     if flag == 0:
-#         first_make_md5(old_dir_path,new_dir_path,diff_dir)
-#         flag = 1
-#     else:
-#         make_md5(new_dir_path)
-#     diff_md5(diff_dir)
-#     log_diff(old_dir_path,new_dir_path,diff_dir,change_dir,log_dir)
-#     end = time.time()
-#     print(end - start)
-#----------------------------------------------
-# r=os.popen('wc -l '+syslog_path)
-# number = int(r.read().split(' ')[0])
-# r.close()
-# print(number)
-# r = os.popen('tail -n +'+str(number-10)+' '+syslog_path)
-# lines = r.readlines()
-# for line in lines:
-#     print(line.rstrip('\n'))
